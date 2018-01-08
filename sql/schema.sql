@@ -1,0 +1,48 @@
+SET FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS `city`;
+DROP TABLE IF EXISTS `job`;
+DROP TABLE IF EXISTS `flight`;
+DROP TABLE IF EXISTS `price`;
+SET FOREIGN_KEY_CHECKS=1;
+
+CREATE TABLE `city` (
+  city_id INT(11) NOT NULL AUTO_INCREMENT,
+  code VARCHAR(10) NOT NULL,
+  name VARCHAR(255),
+  state VARCHAR(255),
+  CONSTRAINT pk_city PRIMARY KEY (city_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `job` (
+  job_id INT(11) NOT NULL AUTO_INCREMENT,
+  day DATE,
+  dep INT(11),
+  arr INT(11),
+  class_type ENUM('A', 'B', 'C'),
+  status ENUM('ACTIVE', 'INACTIVE') NOT NULL,
+  CONSTRAINT pk_job PRIMARY KEY (job_id),
+  CONSTRAINT fk_job_dep FOREIGN KEY (dep) REFERENCES city (city_id) ON DELETE SET NULL,
+  CONSTRAINT fk_job_arr FOREIGN KEY (arr) REFERENCES city (city_id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `flight` (
+  flight_id INT(11) NOT NULL AUTO_INCREMENT,
+  num INT(11) NOT NULL,
+  dep TIME,
+  arr TIME,
+  dur VARCHAR(255),
+  nonstop BOOLEAN,
+  status ENUM('ACTIVE', 'INACTIVE') NOT NULL,
+  job INT(11),
+  CONSTRAINT pk_flight PRIMARY KEY (flight_id),
+  CONSTRAINT fk_flight_job FOREIGN KEY (job) REFERENCES job (job_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `price` (
+  price_id INT(11) NOT NULL AUTO_INCREMENT,
+  created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  price INT(11) NOT NULL,
+  flight INT(11) NOT NULL,
+  CONSTRAINT pk_price PRIMARY KEY (price_id),
+  CONSTRAINT fk_price_flight FOREIGN KEY (flight) REFERENCES flight (flight_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
